@@ -49,11 +49,65 @@ int precedence(char op) {
     return 0;
 }
 
+void infixToPostfix(char* infix, char* postfix) {
+    Stack stack;
+    initStack(&stack);
+    int j = 0;
+    
+    for (int i = 0; infix[i] != '\0'; i++) {
+        char current = infix[i];
+        
+        if (current == ' ')
+            continue;
+        
+        if (isalnum(current)) {
+            postfix[j++] = current;
+        }
+        else if (current == '(') {
+            push(&stack, current);
+        }
+        else if (current == ')') {
+            while (!isEmpty(&stack) && peek(&stack) != '(') {
+                postfix[j++] = pop(&stack);
+            }
+            pop(&stack);
+        }
+        else if (isOperator(current)) {
+            while (!isEmpty(&stack) && peek(&stack) != '(' && 
+                   precedence(peek(&stack)) >= precedence(current)) {
+                postfix[j++] = pop(&stack);
+            }
+            push(&stack, current);
+        }
+    }
+    
+    while (!isEmpty(&stack)) {
+        postfix[j++] = pop(&stack);
+    }
+    
+    postfix[j] = '\0';
+}
+
 int main() {
     char infix[MAX];
     char postfix[MAX];
     
     printf("INFIX TO POSTFIX CONVERTER \n\n");
+    
+    strcpy(infix, "a+b*c");
+    printf("Infix: %s\n", infix);
+    infixToPostfix(infix, postfix);
+    printf("Postfix: %s\n\n", postfix);
+    
+    strcpy(infix, "(a+b)*c");
+    printf("Infix: %s\n", infix);
+    infixToPostfix(infix, postfix);
+    printf("Postfix: %s\n\n", postfix);
+    
+    strcpy(infix, "a+b*c-d");
+    printf("Infix: %s\n", infix);
+    infixToPostfix(infix, postfix);
+    printf("Postfix: %s\n\n", postfix);
     
     return 0;
 }
