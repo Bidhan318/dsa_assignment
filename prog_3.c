@@ -43,10 +43,30 @@ void display(Node* head) {
     printf("NULL\n");
 }
 
+void reverseTraversal(Node* head) {
+    if (head == NULL) {
+        return;
+    }
+    
+    reverseTraversal(head->next);
+    printf("%d -> ", head->data);
+}
+
+void displayReverse(Node* head) {
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    
+    printf("Reverse List: ");
+    reverseTraversal(head);
+    printf("NULL\n");
+}
+
 int main() {
     Node* head = NULL;
     
-    printf("=== LINKED LIST IMPLEMENTATION ===\n\n");
+    printf(" LINKED LIST REVERSE TRAVERSAL \n\n");
     
     insertAtEnd(&head, 10);
     insertAtEnd(&head, 20);
@@ -55,6 +75,7 @@ int main() {
     insertAtEnd(&head, 50);
     
     display(head);
+    displayReverse(head);
     
     return 0;
 }
