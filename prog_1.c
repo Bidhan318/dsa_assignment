@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define MAX_SIZE 100
 
@@ -48,30 +49,77 @@ void display(Stack* s) {
     printf("\n");
 }
 
-int main() {
+// Check if character is opening bracket
+bool isOpeningBracket(char ch) {
+    return (ch == '(' || ch == '[' || ch == '{');
+}
+
+// Check if character is closing bracket
+bool isClosingBracket(char ch) {
+    return (ch == ')' || ch == ']' || ch == '}');
+}
+
+// Check if brackets form a matching pair
+bool isMatchingPair(char opening, char closing) {
+    return ((opening == '(' && closing == ')') ||
+            (opening == '[' && closing == ']') ||
+            (opening == '{' && closing == '}'));
+}
+
+// Main function to check if expression has balanced parentheses
+bool isBalanced(char* expression) {
     Stack stack;
     initStack(&stack);
     
-    printf("Pushing: ( [ {\n");
-    push(&stack, '(');
-    push(&stack, '[');
-    push(&stack, '{');
-    display(&stack);
+    int length = strlen(expression);
     
-    printf("\nPopped: %c\n", pop(&stack));
-    display(&stack);
-    
-    printf("\nPushing: ) ]\n");
-    push(&stack, ')');
-    push(&stack, ']');
-    display(&stack);
-    
-    printf("\nPopping all:\n");
-    while (!isEmpty(&stack)) {
-        printf("%c ", pop(&stack));
+    for (int i = 0; i < length; i++) {
+        char current = expression[i];
+        
+        // Push opening brackets to stack
+        if (isOpeningBracket(current)) {
+            push(&stack, current);
+        }
+        // For closing brackets, check matching
+        else if (isClosingBracket(current)) {
+            // No matching opening bracket
+            if (isEmpty(&stack)) {
+                return false;
+            }
+            
+            char top = pop(&stack);
+            // Check if popped bracket matches current closing bracket
+            if (!isMatchingPair(top, current)) {
+                return false;
+            }
+        }
     }
-    printf("\n");
-    display(&stack);
+    
+    // Stack should be empty if balanced
+    return isEmpty(&stack);
+}
+
+void checkExpression(char* expression) {
+    printf("\nExpression: %s\n", expression);
+    
+    if (isBalanced(expression)) {
+        printf("Result: BALANCED\n");
+    } else {
+        printf("Result: NOT BALANCED\n");
+    }
+}
+
+int main() {
+    printf(" BALANCED PARENTHESES CHECKER \n");
+    
+    // Test the three expressions from question
+    char expr1[] = "a + (b - c) * (d";
+    char expr2[] = "m + [a - b * (c + d * {m)]";
+    char expr3[] = "a + (b - c)";
+    
+    checkExpression(expr1);
+    checkExpression(expr2);
+    checkExpression(expr3);
     
     return 0;
 }
