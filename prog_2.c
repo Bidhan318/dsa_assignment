@@ -88,26 +88,82 @@ void infixToPostfix(char* infix, char* postfix) {
     postfix[j] = '\0';
 }
 
+typedef struct {
+    int items[MAX];
+    int top;
+} IntStack;
+
+void initIntStack(IntStack* s) {
+    s->top = -1;
+}
+
+bool isIntStackEmpty(IntStack* s) {
+    return s->top == -1;
+}
+
+void pushInt(IntStack* s, int item) {
+    s->items[++(s->top)] = item;
+}
+
+int popInt(IntStack* s) {
+    if (isIntStackEmpty(s)) {
+        return 0;
+    }
+    return s->items[(s->top)--];
+}
+
+int evaluatePostfix(char* postfix) {
+    IntStack stack;
+    initIntStack(&stack);
+    
+    for (int i = 0; postfix[i] != '\0'; i++) {
+        char current = postfix[i];
+        
+        if (isdigit(current)) {
+            pushInt(&stack, current - '0');
+        }
+        else if (isOperator(current)) {
+            int val2 = popInt(&stack);
+            int val1 = popInt(&stack);
+            int result;
+            
+            switch(current) {
+                case '+': result = val1 + val2; break;
+                case '-': result = val1 - val2; break;
+                case '*': result = val1 * val2; break;
+                case '/': result = val1 / val2; break;
+            }
+            
+            pushInt(&stack, result);
+        }
+    }
+    
+    return popInt(&stack);
+}
+
 int main() {
     char infix[MAX];
     char postfix[MAX];
     
-    printf("INFIX TO POSTFIX CONVERTER \n\n");
+    printf(" INFIX TO POSTFIX CONVERTER AND EVALUATOR \n\n");
     
-    strcpy(infix, "a+b*c");
-    printf("Infix: %s\n", infix);
+    strcpy(infix, "5+3*2");
+    printf("Infix Expression: %s\n", infix);
     infixToPostfix(infix, postfix);
-    printf("Postfix: %s\n\n", postfix);
+    printf("Postfix Expression: %s\n", postfix);
+    printf("Evaluation Result: %d\n\n", evaluatePostfix(postfix));
     
-    strcpy(infix, "(a+b)*c");
-    printf("Infix: %s\n", infix);
+    strcpy(infix, "(5+3)*2");
+    printf("Infix Expression: %s\n", infix);
     infixToPostfix(infix, postfix);
-    printf("Postfix: %s\n\n", postfix);
+    printf("Postfix Expression: %s\n", postfix);
+    printf("Evaluation Result: %d\n\n", evaluatePostfix(postfix));
     
-    strcpy(infix, "a+b*c-d");
-    printf("Infix: %s\n", infix);
+    strcpy(infix, "8+5*2-3");
+    printf("Infix Expression: %s\n", infix);
     infixToPostfix(infix, postfix);
-    printf("Postfix: %s\n\n", postfix);
+    printf("Postfix Expression: %s\n", postfix);
+    printf("Evaluation Result: %d\n\n", evaluatePostfix(postfix));
     
     return 0;
 }
