@@ -50,13 +50,35 @@ void selectionSort(int arr[], int n, long long *comparisons, long long *swaps) {
             }
         }
         
-        // Swap if needed
         if (min_idx != i) {
             int temp = arr[min_idx];
             arr[min_idx] = arr[i];
             arr[i] = temp;
             (*swaps)++;
         }
+    }
+}
+
+void insertionSort(int arr[], int n, long long *comparisons, long long *swaps) {
+    *comparisons = 0;
+    *swaps = 0;
+    
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        // Shift elements greater than key to the right
+        while (j >= 0) {
+            (*comparisons)++;
+            if (arr[j] > key) {
+                arr[j + 1] = arr[j];
+                (*swaps)++;
+                j--;
+            } else {
+                break;
+            }
+        }
+        arr[j + 1] = key;
     }
 }
 
@@ -85,14 +107,13 @@ int main() {
     printf("\n--- Numbers Before Sorting ---\n");
     printArray(arr, n);
     
-    // Display sorting options
     printf("\nChoose a sorting algorithm:\n");
     printf("1. Bubble Sort\n");
     printf("2. Selection Sort\n");
-    printf("Enter your choice (1-2): ");
+    printf("3. Insertion Sort\n");
+    printf("Enter your choice (1-3): ");
     scanf("%d", &choice);
     
-    // Perform sorting based on choice
     switch(choice) {
         case 1:
             printf("\nSorting using Bubble Sort...\n");
@@ -101,6 +122,10 @@ int main() {
         case 2:
             printf("\nSorting using Selection Sort...\n");
             selectionSort(arr, n, &comparisons, &swaps);
+            break;
+        case 3:
+            printf("\nSorting using Insertion Sort...\n");
+            insertionSort(arr, n, &comparisons, &swaps);
             break;
         default:
             printf("Invalid choice!\n");
@@ -116,6 +141,8 @@ int main() {
         printf("Algorithm: Bubble Sort\n");
     else if (choice == 2)
         printf("Algorithm: Selection Sort\n");
+    else if (choice == 3)
+        printf("Algorithm: Insertion Sort\n");
     printf("Total Comparisons: %lld\n", comparisons);
     printf("Total Swaps: %lld\n", swaps);
     
