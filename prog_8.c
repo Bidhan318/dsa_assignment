@@ -2,52 +2,70 @@
 #include <stdlib.h>
 #include <time.h>
 
-// Function to generate random integers
 void generateRandomNumbers(int arr[], int n) {
     for (int i = 0; i < n; i++) {
-        arr[i] = (rand() % 1000) + 1;  // Random number between 1 and 1000
+        arr[i] = (rand() % 1000) + 1;
     }
 }
 
-// Function to print array
 void printArray(int arr[], int n) {
     for (int i = 0; i < n; i++) {
         printf("%d ", arr[i]);
-        if ((i + 1) % 10 == 0)  // Print 10 numbers per line for better readability
+        if ((i + 1) % 10 == 0)
             printf("\n");
     }
     if (n % 10 != 0)
         printf("\n");
 }
 
-// Bubble Sort with comparison and swap counting
 void bubbleSort(int arr[], int n, long long *comparisons, long long *swaps) {
     *comparisons = 0;
     *swaps = 0;
     
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
-            (*comparisons)++;  // Count each comparison
+            (*comparisons)++;
             
             if (arr[j] > arr[j + 1]) {
-                // Swap elements
                 int temp = arr[j];
                 arr[j] = arr[j + 1];
                 arr[j + 1] = temp;
-                (*swaps)++;  // Count each swap
+                (*swaps)++;
             }
         }
     }
 }
 
+void selectionSort(int arr[], int n, long long *comparisons, long long *swaps) {
+    *comparisons = 0;
+    *swaps = 0;
+    
+    for (int i = 0; i < n - 1; i++) {
+        int min_idx = i;
+        
+        for (int j = i + 1; j < n; j++) {
+            (*comparisons)++;
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        
+        // Swap if needed
+        if (min_idx != i) {
+            int temp = arr[min_idx];
+            arr[min_idx] = arr[i];
+            arr[i] = temp;
+            (*swaps)++;
+        }
+    }
+}
+
 int main() {
-    int n;
+    int n, choice;
     long long comparisons, swaps;
     
-    // Seed random number generator
     srand(time(NULL));
     
-    // Get input from user
     printf("Enter the number of random integers to generate (N): ");
     scanf("%d", &n);
     
@@ -56,35 +74,51 @@ int main() {
         return 1;
     }
     
-    // Allocate memory for array
     int *arr = (int *)malloc(n * sizeof(int));
     if (arr == NULL) {
         printf("Memory allocation failed!\n");
         return 1;
     }
     
-    // Generate random numbers
     generateRandomNumbers(arr, n);
     
-    // Print numbers before sorting
     printf("\n--- Numbers Before Sorting ---\n");
     printArray(arr, n);
     
-    // Perform Bubble Sort
-    printf("\nSorting using Bubble Sort...\n");
-    bubbleSort(arr, n, &comparisons, &swaps);
+    // Display sorting options
+    printf("\nChoose a sorting algorithm:\n");
+    printf("1. Bubble Sort\n");
+    printf("2. Selection Sort\n");
+    printf("Enter your choice (1-2): ");
+    scanf("%d", &choice);
     
-    // Print numbers after sorting
+    // Perform sorting based on choice
+    switch(choice) {
+        case 1:
+            printf("\nSorting using Bubble Sort...\n");
+            bubbleSort(arr, n, &comparisons, &swaps);
+            break;
+        case 2:
+            printf("\nSorting using Selection Sort...\n");
+            selectionSort(arr, n, &comparisons, &swaps);
+            break;
+        default:
+            printf("Invalid choice!\n");
+            free(arr);
+            return 1;
+    }
+    
     printf("\n--- Numbers After Sorting ---\n");
     printArray(arr, n);
     
-    // Display statistics
     printf("\n--- Sorting Statistics ---\n");
-    printf("Algorithm: Bubble Sort\n");
+    if (choice == 1)
+        printf("Algorithm: Bubble Sort\n");
+    else if (choice == 2)
+        printf("Algorithm: Selection Sort\n");
     printf("Total Comparisons: %lld\n", comparisons);
     printf("Total Swaps: %lld\n", swaps);
     
-    // Free allocated memory
     free(arr);
     
     return 0;
