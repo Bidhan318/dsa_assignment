@@ -18,31 +18,65 @@ void swap(int* a, int* b) {
     *b = temp;
 }
 
-// Heapify up for insertion
-void heapifyUp(Heap* h, int index) {
-    int parent = (index - 1) / 2;
+void minHeapifyDown(Heap* h, int index) {
+    int smallest = index;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
     
-    if (index > 0 && h->arr[index] < h->arr[parent]) {
-        swap(&h->arr[index], &h->arr[parent]);
-        heapifyUp(h, parent);
+    if (left < h->size && h->arr[left] < h->arr[smallest])
+        smallest = left;
+    
+    if (right < h->size && h->arr[right] < h->arr[smallest])
+        smallest = right;
+    
+    if (smallest != index) {
+        swap(&h->arr[index], &h->arr[smallest]);
+        minHeapifyDown(h, smallest);
     }
 }
 
-// Insert element into heap
-void insert(Heap* h, int value) {
-    if (h->size >= MAX) {
-        printf("Heap is full!\n");
-        return;
-    }
+void maxHeapifyDown(Heap* h, int index) {
+    int largest = index;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
     
-    h->arr[h->size] = value;
-    heapifyUp(h, h->size);
-    h->size++;
+    if (left < h->size && h->arr[left] > h->arr[largest])
+        largest = left;
+    
+    if (right < h->size && h->arr[right] > h->arr[largest])
+        largest = right;
+    
+    if (largest != index) {
+        swap(&h->arr[index], &h->arr[largest]);
+        maxHeapifyDown(h, largest);
+    }
 }
 
-// Display heap
+void buildMinHeap(Heap* h, int arr[], int n) {
+    h->size = n;
+    
+    for (int i = 0; i < n; i++) {
+        h->arr[i] = arr[i];
+    }
+    
+    for (int i = (n / 2) - 1; i >= 0; i--) {
+        minHeapifyDown(h, i);
+    }
+}
+
+void buildMaxHeap(Heap* h, int arr[], int n) {
+    h->size = n;
+    
+    for (int i = 0; i < n; i++) {
+        h->arr[i] = arr[i];
+    }
+    
+    for (int i = (n / 2) - 1; i >= 0; i--) {
+        maxHeapifyDown(h, i);
+    }
+}
+
 void display(Heap* h) {
-    printf("Heap: ");
     for (int i = 0; i < h->size; i++) {
         printf("%d ", h->arr[i]);
     }
@@ -50,18 +84,26 @@ void display(Heap* h) {
 }
 
 int main() {
-    Heap h;
-    initHeap(&h);
+    Heap minHeap, maxHeap;
     
-    insert(&h, 50);
-    insert(&h, 30);
-    insert(&h, 20);
-    insert(&h, 15);
-    insert(&h, 10);
-    insert(&h, 8);
-    insert(&h, 16);
+    int arr[] = {45, 12, 78, 23, 56, 9, 34, 67, 19, 88};
+    int n = sizeof(arr) / sizeof(arr[0]);
     
-    display(&h);
+    printf("Original array: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n\n");
+    
+    initHeap(&minHeap);
+    buildMinHeap(&minHeap, arr, n);
+    printf("Min Heap: ");
+    display(&minHeap);
+    
+    initHeap(&maxHeap);
+    buildMaxHeap(&maxHeap, arr, n);
+    printf("Max Heap: ");
+    display(&maxHeap);
     
     return 0;
 }
