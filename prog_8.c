@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+// Global counters for merge sort
+long long merge_comparisons = 0;
+long long merge_swaps = 0;
+
 void generateRandomNumbers(int arr[], int n) {
     for (int i = 0; i < n; i++) {
         arr[i] = (rand() % 1000) + 1;
@@ -67,7 +71,6 @@ void insertionSort(int arr[], int n, long long *comparisons, long long *swaps) {
         int key = arr[i];
         int j = i - 1;
         
-        // Shift elements greater than key to the right
         while (j >= 0) {
             (*comparisons)++;
             if (arr[j] > key) {
@@ -80,6 +83,74 @@ void insertionSort(int arr[], int n, long long *comparisons, long long *swaps) {
         }
         arr[j + 1] = key;
     }
+}
+
+// Merge function for merge sort
+void merge(int arr[], int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    // Create temporary arrays
+    int *L = (int *)malloc(n1 * sizeof(int));
+    int *R = (int *)malloc(n2 * sizeof(int));
+    
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = arr[mid + 1 + j];
+    
+    int i = 0, j = 0, k = left;
+    
+    // Merge the temporary arrays back
+    while (i < n1 && j < n2) {
+        merge_comparisons++;
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+            merge_swaps++;  // Count as swap when taking from right array
+        }
+        k++;
+    }
+    
+    // Copy remaining elements
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+    
+    free(L);
+    free(R);
+}
+
+// Recursive merge sort function
+void mergeSortRecursive(int arr[], int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        
+        mergeSortRecursive(arr, left, mid);
+        mergeSortRecursive(arr, mid + 1, right);
+        merge(arr, left, mid, right);
+    }
+}
+
+void mergeSort(int arr[], int n, long long *comparisons, long long *swaps) {
+    merge_comparisons = 0;
+    merge_swaps = 0;
+    
+    mergeSortRecursive(arr, 0, n - 1);
+    
+    *comparisons = merge_comparisons;
+    *swaps = merge_swaps;
 }
 
 int main() {
@@ -111,7 +182,8 @@ int main() {
     printf("1. Bubble Sort\n");
     printf("2. Selection Sort\n");
     printf("3. Insertion Sort\n");
-    printf("Enter your choice (1-3): ");
+    printf("4. Merge Sort\n");
+    printf("Enter your choice (1-4): ");
     scanf("%d", &choice);
     
     switch(choice) {
@@ -126,6 +198,10 @@ int main() {
         case 3:
             printf("\nSorting using Insertion Sort...\n");
             insertionSort(arr, n, &comparisons, &swaps);
+            break;
+        case 4:
+            printf("\nSorting using Merge Sort...\n");
+            mergeSort(arr, n, &comparisons, &swaps);
             break;
         default:
             printf("Invalid choice!\n");
@@ -143,6 +219,8 @@ int main() {
         printf("Algorithm: Selection Sort\n");
     else if (choice == 3)
         printf("Algorithm: Insertion Sort\n");
+    else if (choice == 4)
+        printf("Algorithm: Merge Sort\n");
     printf("Total Comparisons: %lld\n", comparisons);
     printf("Total Swaps: %lld\n", swaps);
     
